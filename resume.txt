@@ -1,5 +1,6 @@
-il est terminé à 60%
+il est terminé à 70%
 il reste à faire :
-Tester si toutes les fonctionnalités ne présentent aucun erreur
-Améliorer le css
-Faire la 5 ème modules
+
+côté sécurité j'ai pas pu tout vérifier mais en globalité toutes les fonctionnalités marche
+mais je vais dire 80% car il y a beaucoup de chose qui va marcher même si on temps normal
+on devrait le gérer comme les dates en retard etc....
