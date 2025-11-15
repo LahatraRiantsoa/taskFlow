@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="utf-8" />
+    <title>TaskFlow — Collaboration</title>
+    <link rel="stylesheet" href="collaboration.css">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>TaskFlow — Collaboration</h1>
+            <div>
+                <span id="whoami"></span>
+                <button id="btn-logout">Déconnexion</button>
+            </div>
+        </header>
+
+        <nav class="tabs">
+            <button data-view="mine" class="tab active">Mes tâches</button>
+            <button data-view="shared" class="tab">Tâches partagées</button>
+            <button data-view="all" class="tab">Toutes les tâches</button>
+        </nav>
+
+        <div id="loading-screen">
+            <div class="spinner"></div>
+        </div>
+        <section class="controls">
+            <div class="left">
+                <input id="search" placeholder="Recherche titre..." />
+                <select id="filter-priority">
+                    <option value="">Toutes priorités</option>
+                    <option value="1">Low</option>
+                    <option value="2">Medium</option>
+                    <option value="3">High</option>
+                </select>
+                <select id="filter-status">
+                    <option value="">Tous statuts</option>
+                    <option value="pending">Pending</option>
+                    <option value="in_progress">In progress</option>
+                    <option value="done">Done</option>
+                </select>
+                <button id="btn-apply-filter">Appliquer</button>
+            </div>
+            <div class="right">
+                <button id="btn-refresh">Rafraîchir</button>
+            </div>
+        </section>
+
+        <main>
+            <div id="task-list-container">
+                <table id="task-table">
+                    <thead>
+                        <tr>
+                            <th>Titre</th>
+                            <th>Deadline</th>
+                            <th>Priorité</th>
+                            <th>Statut</th>
+                            <th>Propriétaire</th>
+                            <th>Contributeurs</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+
+            <aside id="task-detail">
+                <h2 id="detail-title">Détails</h2>
+                <div id="detail-body">Sélectionne une tâche pour voir les détails et les commentaires.</div>
+            </aside>
+        </main>
+    </div>
+    <div id="share-modal" class="modal hidden">
+        <div class="modal-content">
+            <h3>Partager la tâche : <span id="share-task-title"></span></h3>
+            <label>Choisir utilisateurs (multi) :</label>
+            <select id="share-users" multiple size="6"></select>
+
+            <label>Permission :</label>
+            <select id="share-permission">
+                <option value="contributor">Contributeur</option>
+                <option value="viewer">Viewer</option>
+                <option value="editor">Editor</option>
+            </select>
+
+            <div class="modal-actions">
+                <button id="btn-share-confirm">Partager</button>
+                <button id="btn-share-cancel">Annuler</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="collaboration.js"></script>
+</body>
+
+</html>

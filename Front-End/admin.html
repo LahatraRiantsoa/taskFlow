@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>TaskFlow - Administration</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        .loader { 
+            position: fixed; top:0; left:0; width:100%; height:100%;
+            background: rgba(255,255,255,0.9);
+            display:flex; justify-content:center; align-items:center;
+            font-size:2em; 
+        }
+        .admin-container { display:none; padding:20px; font-family:Arial; }
+        table { width:100%; border-collapse: collapse; margin-top:20px; }
+        th, td { padding:10px; border-bottom:1px solid #ddd; }
+        th { background:#f2f2f2; }
+        .delete-btn { background:red; color:white; padding:5px; border:none; border-radius:5px; cursor:pointer; }
+        .role-select { padding:5px; }
+    </style>
+</head>
+
+<body>
+
+<div class="loader" id="loader">Chargement...</div>
+
+<div class="admin-container" id="admin-panel">
+    <h1>Panneau d'administration</h1>
+    <button id="btn-logout">Déconnexion</button>
+    <hr>
+
+    <h2>📌 Liste des utilisateurs</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Email</th>
+                <th>Rôle</th>
+                <th>Nombre de tâches</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="users-table-body"></tbody>
+    </table>
+
+    <hr>
+
+    <h2>📊 Statistiques globales</h2>
+    <canvas id="stats-chart"></canvas>
+</div>
+
+<script>
+const baseURL = "http://127.0.0.1:8000/api";
+const token = localStorage.getItem("jwt");
+const me = parseJwt(token);
+
+if (!token || !me.roles?.includes("ROLE_ADMIN")) {
+    alert("Accès refusé : vous n'êtes pas administrateur.");
+    window.location.href = "index.html";
+}
+
+
+async function loadAdminData() {
+    try {
+        const [uRes, tRes] = await Promise.all([
+            fetch(`${baseURL}/users`, { headers: { Authorization: `Bearer ${token}` }}),
+            fetch(`${baseURL}/tasks`, { headers: { Authorization: `Bearer ${token}` }}),
+        ]);
+
+        const users = await uRes.json();
+        const tasks = await tRes.json();
+
+
+        document.getElementById("loader").style.display = "none";
+        document.getElementById("admin-panel").style.display = "block";
+
+        renderUsers(users, tasks);
+        renderStats(tasks);
+
+    } catch (err) {
+        alert("Erreur : " + err.message);
+    }
+}
+
+
+function renderUsers(users, tasks) {
+    const tbody = document.getElementById("users-table-body");
+    tbody.innerHTML = "";
+
+    users.forEach(u => {
+        const userTasks = tasks.filter(t => t.owner?.id === u.id).length;
+
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+            <td>${u.id}</td>
+            <td>${u.email}</td>
+
+            <td>
+                <select class="role-select" data-user-id="${u.id}">
+                    <option value="ROLE_USER" ${u.roles.includes("ROLE_USER") ? "selected" : ""}>Utilisateur</option>
+                    <option value="ROLE_ADMIN" ${u.roles.includes("ROLE_ADMIN") ? "selected" : ""}>Admin</option>
+                </select>
+            </td>
+
+            <td>${userTasks}</td>
+
+            <td>
+                <button class="delete-btn" data-id="${u.id}">Supprimer</button>
+            </td>
+        `;
+
+        tbody.appendChild(tr);
+    });
+
+    document.querySelectorAll(".role-select").forEach(select => {
+        select.addEventListener("change", updateRole);
+    });
+
+    document.querySelectorAll(".delete-btn").forEach(btn => {
+        btn.addEventListener("click", deleteUser);
+    });
+}
+
+
+async function updateRole(e) {
+    const userId = e.target.dataset.userId;
+    const newRole = e.target.value;
+
+    await fetch(`${baseURL}/users/${userId}`, {
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/merge-patch+json",
+            Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ roles: [newRole] })  
+    });
+
+    alert("Rôle mis à jour !");
+}
+
+
+async function deleteUser(e) {
+    const id = e.target.dataset.id;
+
+    if (!confirm("Supprimer cet utilisateur ?")) return;
+
+    await fetch(`${baseURL}/users/${id}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` }
+    });
+
+    alert("Utilisateur supprimé !");
+    loadAdminData();
+}
+
+
+function renderStats(tasks) {
+    const ctx = document.getElementById("stats-chart").getContext("2d");
+
+    const stats = {
+        pending: tasks.filter(t => t.status === "pending").length,
+        done: tasks.filter(t => t.status === "done").length,
+        late: tasks.filter(t => new Date(t.dueDate) < new Date()).length
+    };
+
+    new Chart(ctx, {
+        type: "bar",
+        data: {
+            labels: ["En attente", "Terminées", "En retard"],
+            datasets: [{
+                data: [stats.pending, stats.done, stats.late],
+                backgroundColor: ["orange", "green", "red"]
+            }]
+        }
+    });
+}
+
+
+function parseJwt(token) {
+    if (!token) return null;
+    return JSON.parse(atob(token.split(".")[1]));
+}
+
+
+document.getElementById("btn-logout").onclick = () => {
+    localStorage.clear();
+    window.location.href = "index.html";
+};
+
+loadAdminData();
+</script>
+</body>
+</html>

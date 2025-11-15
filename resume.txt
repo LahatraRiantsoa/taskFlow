@@ -1,0 +1,5 @@
+il est terminé à 60%
+il reste à faire :
+Tester si toutes les fonctionnalités ne présentent aucun erreur
+Améliorer le css
+Faire la 5 ème modules

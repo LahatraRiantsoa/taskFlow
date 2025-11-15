@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <title>TaskFlow - Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>Bonjour, <span id="user-name"></span></h1>
+
+        <button id="btn-logout">Se déconnecter</button>
+        <button id="btn-collaboration">Collaboration</button>
+         <button id="btn-collaboration-dashboard">Collaboration Dashboard</button>
+        <hr>
+
+        <h2>Mes Tâches</h2>
+        <div id="task-form">
+            <input type="text" id="task-title" placeholder="Titre">
+            <input type="text" id="task-desc" placeholder="Description">
+            <input type="date" id="task-deadline">
+            <select id="task-priority">
+                <option value="1">Low</option>
+                <option value="2">Medium</option>
+                <option value="3">High</option>
+            </select>
+            <button id="btn-add-task">Ajouter</button>
+        </div>
+
+        <div>
+            <label>Filtrer par priorité:</label>
+            <select id="filter-priority">
+                <option value="">Toutes</option>
+                <option value="Low">Low</option>
+                <option value="Medium">Medium</option>
+                <option value="High">High</option>
+            </select>
+
+            <label>Filtrer par statut:</label>
+            <select id="filter-status">
+                <option value="">Toutes</option>
+                <option value="pending">Pending</option>
+                <option value="done">Done</option>
+            </select>
+
+            <button id="btn-filter">Filtrer</button>
+        </div>
+
+        <table id="task-table">
+            <thead>
+                <tr>
+                    <th>Titre</th>
+                    <th>Description</th>
+                    <th>Deadline</th>
+                    <th>Priorité</th>
+                    <th>Statut</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
+    </div>
+
+    <script src="task.js"></script>
+</body>
+
+</html>
