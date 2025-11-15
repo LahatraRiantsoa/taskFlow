@@ -5,7 +5,7 @@ GRANT ALL PRIVILEGES ON DATABASE taskflow TO taskflow;
 
 INSERT INTO "user" (email, name, roles, password)
 VALUES (
-    'admin@taskflow.local', 
+    'admin@example.com', 
     'Admin', 
     '["ROLE_ADMIN"]', 
     '$2y$12$7eIVso1uiBMV4D1PswUwselWnFzJWOb2ALHn5bwJGLM3LLwsAiq42'
